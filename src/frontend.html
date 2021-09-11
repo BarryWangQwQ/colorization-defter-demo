@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Defter App</title>
+    <script src="defter.js"></script>
+    <script src="ramjet.js"></script>
+    <script src="easing.js"></script>
+    <script type="module" src="./build/frontend.js"></script>
+</head>
+<style>
+    .container {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        width: 900px;
+        height: 600px;
+        z-index: -1;
+    }
+
+    .img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: 900px 100%;
+    }
+
+    .after-img {
+        border-radius: 10px;
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .before-img {
+        width: 50%;
+        border-radius: 10px;
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .slider {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 100%;
+        background: rgba(242, 242, 241, .3);
+        outline: none;
+        margin: 0;
+        transition: all .2s;
+    }
+
+    .slider:hover {
+        background: rgba(242, 242, 241, .1);
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 3px;
+        height: 600px;
+        background: white;
+    }
+
+    .upload {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        left: 301px;
+        top: 255px;
+        z-index: 2;
+    }
+
+    .heibai {
+        position: absolute;
+        width: 293px;
+        height: 186px;
+        left: 132px;
+        top: 94px;
+    }
+
+    .chaofen {
+        position: absolute;
+        width: 293px;
+        height: 186px;
+        left: 484px;
+        top: 94px;
+    }
+
+    .youhua {
+        position: absolute;
+        width: 293px;
+        height: 186px;
+        left: 132px;
+        top: 330px;
+    }
+
+    .yejing {
+        position: absolute;
+        width: 293px;
+        height: 186px;
+        left: 484px;
+        top: 330px;
+    }
+
+    .heibai:hover, .chaofen:hover, .youhua:hover, .yejing:hover {
+        filter: brightness(0.95);
+    }
+
+    .heibai:active, .chaofen:active, .youhua:active, .yejing:active {
+        filter: brightness(0.8);
+    }
+
+    .loading {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        left: 360px;
+        top: 104px;
+        border-radius: 50px;
+    }
+
+</style>
+<body>
+<!-- Coding here :-) -->
+<img id="heibai" class="heibai" src="heibai.png" alt="">
+<img class="chaofen" src="chaofen.png" alt="">
+<img class="youhua" src="youhua.png" alt="">
+<img class="yejing" src="yejing.png" alt="">
+<img id="loading" class="loading" src="loading.gif" alt="">
+<div id="container" class='container'>
+    <div id="after" class='img after-img'></div>
+    <div id="before" class='img before-img'></div>
+    <input type="range" min="1" max="100" value="50" class="slider" name='slider' id="slider">
+</div>
+<script>
+    const container = document.getElementById("container");
+    const heibai = document.getElementById("heibai");
+    const slider = document.getElementById("slider");
+    const loading = document.getElementById("loading");
+    const before = document.getElementById("before");
+    const after = document.getElementById("after");
+
+    let sliderPos;
+    slider.addEventListener("input", function (e) {
+        sliderPos = e.target.value;
+        document.querySelector(".before-img").style.width = `${sliderPos}%`;
+    })
+    ramjet.hide(container);
+    ramjet.hide(loading);
+
+    async function trans() {
+        let path = await frontend.get_path()();
+        ramjet.show(loading);
+        await frontend.trans(path)();
+        before.style.backgroundImage="url('in.png')"
+        after.style.backgroundImage="url('out.png')"
+        container.style.zIndex = "1";
+        ramjet.transform(heibai, container, {
+            easing: easing.easeOutExpo_costom,
+            duration: 500,
+            done: function () {
+                ramjet.show(container);
+            },
+        });
+    }
+
+    heibai.addEventListener("click", trans);
+</script>
+</body>
+</html>
